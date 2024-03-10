@@ -7,7 +7,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.kafka.annotation.EnableKafka;
-import org.springframework.kafka.annotation.KafkaListener;
 
 @SpringBootApplication
 @Slf4j
@@ -42,10 +41,10 @@ public class SpringBootXKafkaApplication {
 //		};
 //    }
 
-	@KafkaListener(topics = "${ankush003.kafka.topic}")
-	public String listen(String message) {
-//		System.out.println("Received Messasge in group foo: " + message);
-		log.info("Received Messasge in group foo: " + message);
-		return message;
-	}
+//	@KafkaListener(topics = "${ankush003.kafka.topic}")
+//	public String listen(String message) {
+////		System.out.println("Received Messasge in group foo: " + message);
+//		log.info("Received Messasge in group foo: " + message);
+//		return message;
+//	}
 }

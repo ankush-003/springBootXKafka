@@ -46,7 +46,10 @@ public class TaskController {
         ExecutorService sseMvcExecutor = Executors.newSingleThreadExecutor();
         sseMvcExecutor.execute(() -> {
             try {
-                consumer.pollTaskEvent(Duration.ofSeconds(1), emitter);
+                while (true) {
+                    consumer.pollTaskEvent(Duration.ofSeconds(1), emitter);
+                    Thread.sleep(1000);
+                }
 //                Thread.sleep(1000);
             } catch (Exception e) {
                 emitter.completeWithError(e);

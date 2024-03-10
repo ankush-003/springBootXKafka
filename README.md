@@ -18,5 +18,8 @@
 ## ListenableFuture
 - `ListenableFuture` is a generic interface that represents the result of an asynchronous computation.
 - `ListenableFuture` is a part of the `org.springframework.util.concurrent` package.
-- 
+
+## References
+- [Spring for Apache Kafka Official Docs](https://docs.spring.io/spring-kafka/reference/kafka.html)
+- [Server Sent Events with Spring](https://www.baeldung.com/spring-server-sent-events)
 
