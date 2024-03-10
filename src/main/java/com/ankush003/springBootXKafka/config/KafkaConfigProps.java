@@ -14,5 +14,12 @@ import org.springframework.context.annotation.Configuration;
 @NoArgsConstructor
 @Builder
 public class KafkaConfigProps {
+//    @Bean
+//    public NewTopic taskEvents() {
+//        return TopicBuilder.name("task-events")
+//                .partitions(3)
+//                .replicas(1)
+//                .build();
+//    }
     private String topic;
 }

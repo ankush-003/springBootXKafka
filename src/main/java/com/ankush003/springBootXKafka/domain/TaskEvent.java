@@ -5,8 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -18,5 +16,22 @@ public class TaskEvent {
     private String taskStatus;
     private String taskType;
     private String taskPayload;
-    private LocalDateTime taskCreatedTime;
 }
+
+// sample json
+// {
+//     "userId": "user1",
+//     "taskId": "task1",
+//     "taskName": "task1",
+//     "taskStatus": "PENDING",
+//     "taskType": "EMAIL",
+//     "taskPayload": "email payload",
+// }
+// {
+//     "userId": "user2",
+//     "taskId": "task2",
+//     "taskName": "task2",
+//     "taskStatus": "PENDING",
+//     "taskType": "SMS",
+//     "taskPayload": "sms payload",
+// }

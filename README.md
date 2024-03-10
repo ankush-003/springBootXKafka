@@ -15,3 +15,8 @@
 - `CommandLineRunner` is a functional interface that can be used to run the code after the Spring Boot application has started.
 - `@Order` annotation can be used to specify the order of execution of the Application Runners.
 
+## ListenableFuture
+- `ListenableFuture` is a generic interface that represents the result of an asynchronous computation.
+- `ListenableFuture` is a part of the `org.springframework.util.concurrent` package.
+- 
+
