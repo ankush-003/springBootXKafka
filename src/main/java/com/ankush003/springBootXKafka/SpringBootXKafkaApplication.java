@@ -43,8 +43,9 @@ public class SpringBootXKafkaApplication {
 
 //	@KafkaListener(topics = "${ankush003.kafka.topic}")
 //	public String listen(String message) {
-////		System.out.println("Received Messasge in group foo: " + message);
+//		System.out.println("Received Messasge in group foo: " + message);
 //		log.info("Received Messasge in group foo: " + message);
+//
 //		return message;
 //	}
 }

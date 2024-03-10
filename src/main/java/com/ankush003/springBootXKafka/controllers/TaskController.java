@@ -1,21 +1,29 @@
 package com.ankush003.springBootXKafka.controllers;
 
+import com.ankush003.springBootXKafka.domain.TaskEntity;
 import com.ankush003.springBootXKafka.domain.TaskEvent;
 import com.ankush003.springBootXKafka.services.Consumer;
 import com.ankush003.springBootXKafka.services.Producer;
 import com.ankush003.springBootXKafka.services.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Sinks;
 
-import java.time.Duration;
+import java.util.List;
+import java.util.Optional;
 
 @RestController
+@RequestMapping("/task")
 public class TaskController {
+
+    @Autowired
+    private Sinks.Many<TaskEntity> sink;
+
+    @Autowired
+    private Flux<TaskEntity> taskBroadcast;
 
     @Autowired
     private Producer producer;
@@ -27,52 +35,31 @@ public class TaskController {
     private TaskService taskService;
 
     @GetMapping("/{taskId}")
-    public ResponseEntity<?> getTaskById(String taskId) {
-        return ResponseEntity.ok(taskService.getTaskById(taskId));
+    public ResponseEntity<TaskEntity> getTaskById(@PathVariable String taskId) {
+        Optional<TaskEntity> taskEntity = taskService.getTaskById(taskId);
+        return taskEntity.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<TaskEntity>> getTaskByUserId(@PathVariable String userId) {
+        return ResponseEntity.ok(taskService.getTaskByUserId(userId));
     }
 
     @GetMapping("/all")
-    public ResponseEntity<?> getAllTasks() {
+    public ResponseEntity<List<TaskEntity>> getAllTasks() {
         return ResponseEntity.ok(taskService.getAllTasks());
     }
 
-    @GetMapping("/consume")
-    public ResponseEntity<?> consumeTaskEvent(String message) {
-        return ResponseEntity.ok(consumer.consumeTaskEvent(message));
-    }
-
-    @GetMapping("/stream/tasks")
-    public SseEmitter streamTasks() {
-        SseEmitter emitter = new SseEmitter();
-        org.apache.kafka.clients.consumer.Consumer<String, String> consumerInstance = consumer.createConsumer();
-//        ExecutorService sseMvcExecutor = Executors.newSingleThreadExecutor();
-//        sseMvcExecutor.execute(() -> {
-//            try {
-//                while (true) {
-//                    consumer.pollTaskEvent(Duration.ofSeconds(1), emitter);
-//                    Thread.sleep(1000);
-//                }
-////                Thread.sleep(1000);
-//            } catch (Exception e) {
-//                emitter.completeWithError(e);
-//            }
-//        });
-//        return emitter;
-        try {
-            while (true) {
-                consumer.pollTaskEvent(Duration.ofSeconds(1), emitter, consumerInstance);
-//                Thread.sleep(1000);
-            }
-        } catch (Exception e) {
-            emitter.completeWithError(e);
-        }
-        return emitter;
+    @GetMapping(value="/stream", produces=MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<TaskEntity> streamTaskEvents() {
+        return taskBroadcast;
     }
 
     @PostMapping("/produce")
-    public ResponseEntity<TaskEvent> produceTaskEvent(@RequestBody final TaskEvent taskEvent) {
-        producer.sendTaskEvent(taskEvent);
-        taskService.saveTask(taskEvent);
-        return ResponseEntity.ok(taskEvent);
+    public ResponseEntity<TaskEntity> produceTaskEvent(@RequestBody TaskEvent taskEvent) {
+        TaskEntity savedTaskEntity = taskService.saveTask(taskEvent);
+        producer.produceTaskEntity(savedTaskEntity);
+        // sink.tryEmitNext(savedTaskEntity);
+        return ResponseEntity.ok(savedTaskEntity);
     }
 }

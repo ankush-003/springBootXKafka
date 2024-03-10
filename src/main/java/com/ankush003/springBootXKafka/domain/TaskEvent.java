@@ -10,8 +10,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class TaskEvent {
-    private String userId;
-    private String taskId;
+//    private String userId;
+//    private String taskId;
     private String taskName;
     private String taskStatus;
     private String taskType;

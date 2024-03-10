@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.UUID;
 
 @Service
 public class TaskServiceImpl implements TaskService {
@@ -19,54 +19,45 @@ public class TaskServiceImpl implements TaskService {
     private TaskRepository taskRepository;
 
     @Override
-    public void saveTask(TaskEvent taskEvent) {
-        taskRepository.save(convertToTaskEntity(taskEvent));
+    public TaskEntity saveTask(TaskEvent taskEvent) {
+        return taskRepository.save(convertToTaskEntity(taskEvent));
     }
 
     @Override
-    public Optional<TaskEvent> getTaskById(String taskId) {
-        TaskEntity taskEntity = taskRepository.findByTaskId(taskId);
-        if (taskEntity != null) {
-            return Optional.of(convertToTaskEvent(taskEntity));
-        }
-        return Optional.empty();
+    public Optional<TaskEntity> getTaskById(String taskId) {
+        return taskRepository.findByTaskId(taskId);
     }
 
     @Override
-    public Optional<TaskEvent> getTaskByUserId(String userId) {
-        TaskEntity taskEntity = taskRepository.findByUserId(userId);
-        if (taskEntity != null) {
-            return Optional.of(convertToTaskEvent(taskEntity));
-        }
-        return Optional.empty();
+    public List<TaskEntity> getTaskByUserId(String userId) {
+        return taskRepository.findByUserId(userId);
     }
 
     @Override
-    public List<TaskEvent> getAllTasks() {
-        List<TaskEntity> taskEntities = taskRepository.findAll();
-        return taskEntities.stream().map(taskEntity -> convertToTaskEvent(taskEntity)).collect(Collectors.toList());
+    public List<TaskEntity> getAllTasks() {
+        return taskRepository.findAll();
     }
 
-    private TaskEvent convertToTaskEvent(TaskEntity taskEntity) {
-        return TaskEvent.builder()
-                .taskId(taskEntity.getTaskId())
-                .userId(taskEntity.getUserId())
-                .taskName(taskEntity.getTaskName())
-                .taskStatus(taskEntity.getTaskStatus())
-                .taskType(taskEntity.getTaskType())
-                .taskPayload(taskEntity.getTaskPayload())
-                .build();
-    }
-
-    private TaskEntity convertToTaskEntity(TaskEvent taskEvent) {
+    @Override
+    public TaskEntity convertToTaskEntity(TaskEvent taskEvent) {
+        // random UUIDs for userId and taskId, current time for taskCreatedTime
         return TaskEntity.builder()
-                .taskId(taskEvent.getTaskId())
-                .userId(taskEvent.getUserId())
+                .userId(UUID.randomUUID().toString())
+                .taskId(UUID.randomUUID().toString())
                 .taskName(taskEvent.getTaskName())
                 .taskStatus(taskEvent.getTaskStatus())
                 .taskType(taskEvent.getTaskType())
                 .taskPayload(taskEvent.getTaskPayload())
                 .taskCreatedTime(LocalDateTime.now())
+                .build();
+    }
+
+    private TaskEvent convertToTaskEvent(TaskEntity taskEntity) {
+        return TaskEvent.builder()
+                .taskName(taskEntity.getTaskName())
+                .taskStatus(taskEntity.getTaskStatus())
+                .taskType(taskEntity.getTaskType())
+                .taskPayload(taskEntity.getTaskPayload())
                 .build();
     }
 }

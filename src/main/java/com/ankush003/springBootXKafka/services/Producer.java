@@ -1,9 +1,9 @@
 package com.ankush003.springBootXKafka.services;
 
-import com.ankush003.springBootXKafka.domain.TaskEvent;
+import com.ankush003.springBootXKafka.domain.TaskEntity;
 
 public interface Producer {
-    void sendTaskEvent(TaskEvent taskEvent);
+    void produceTaskEntity(TaskEntity taskEntity);
 
 //    void sendTaskEvent();
 }

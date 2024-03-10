@@ -1,7 +1,7 @@
 package com.ankush003.springBootXKafka.services.implementations;
 
 import com.ankush003.springBootXKafka.config.KafkaConfigProps;
-import com.ankush003.springBootXKafka.domain.TaskEvent;
+import com.ankush003.springBootXKafka.domain.TaskEntity;
 import com.ankush003.springBootXKafka.services.Producer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
@@ -24,9 +24,9 @@ public class TaskProducer implements Producer {
     private KafkaTemplate<String, String> kafkaTemplate;
 
     @Override
-    public void sendTaskEvent(TaskEvent taskEvent) {
+    public void produceTaskEntity(TaskEntity taskEntity) {
         try {
-            final String payload = objectMapper.writeValueAsString(taskEvent);
+            final String payload = objectMapper.writeValueAsString(taskEntity);
             log.info("Sending payload: " + payload);
             kafkaTemplate.send(kafkaConfigProps.getTopic(), payload);
         } catch (Exception e) {

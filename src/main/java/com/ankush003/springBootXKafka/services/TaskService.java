@@ -1,16 +1,19 @@
 package com.ankush003.springBootXKafka.services;
 
+import com.ankush003.springBootXKafka.domain.TaskEntity;
 import com.ankush003.springBootXKafka.domain.TaskEvent;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface TaskService {
-    void saveTask(TaskEvent taskEvent);
+    TaskEntity saveTask(TaskEvent taskEvent);
 
-    List<TaskEvent> getAllTasks();
+    List<TaskEntity> getAllTasks();
 
-    Optional<TaskEvent> getTaskById(String taskId);
+    Optional<TaskEntity> getTaskById(String taskId);
 
-    Optional<TaskEvent> getTaskByUserId(String userId);
+    List<TaskEntity> getTaskByUserId(String userId);
+
+    TaskEntity convertToTaskEntity(TaskEvent taskEvent);
 }
