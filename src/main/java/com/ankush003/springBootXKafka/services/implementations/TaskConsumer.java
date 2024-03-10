@@ -15,6 +15,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -26,14 +27,12 @@ public class TaskConsumer implements Consumer {
 
     private ObjectMapper objectMapper;
 
-    private org.apache.kafka.clients.consumer.Consumer<String, String> consumer;
+    private org.apache.kafka.clients.consumer.Consumer<String, String>  consumer;
 
     TaskConsumer(@Autowired ConsumerFactory<String, String> consumerFactory, @Autowired KafkaConfigProps kafkaConfigProps, @Autowired ObjectMapper objectMapper) {
         this.consumerFactory = consumerFactory;
         this.kafkaConfigProps = kafkaConfigProps;
         this.objectMapper = objectMapper;
-        consumer = consumerFactory.createConsumer();
-        consumer.subscribe(List.of(kafkaConfigProps.getTopic()));
     }
 
     @Override
@@ -44,12 +43,19 @@ public class TaskConsumer implements Consumer {
     }
 
     @Override
-    public void pollTaskEvent(Duration duration, SseEmitter emitter) {
+    public org.apache.kafka.clients.consumer.Consumer<String, String> createConsumer() {
+        consumer = consumerFactory.createConsumer();
+        consumer.subscribe(List.of(kafkaConfigProps.getTopic()));
+        return consumer;
+    }
+
+    @Override
+    public void pollTaskEvent(Duration duration, SseEmitter emitter, org.apache.kafka.clients.consumer.Consumer<String, String> consumer) {
         ConsumerRecords<String, String> records = consumer.poll(duration);
         for (ConsumerRecord<String, String> record : records) {
             log.info("Received message: " + record.value());
             SseEmitter.SseEventBuilder event = SseEmitter.event().
-                    id(String.valueOf(record.offset())).
+                    id(UUID.randomUUID().toString()).
                     name("taskEvent").
                     data(record.value());
             try {

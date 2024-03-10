@@ -7,5 +7,8 @@ import java.time.Duration;
 
 public interface Consumer {
     TaskEvent consumeTaskEvent(String message);
-    void pollTaskEvent(Duration duration, SseEmitter emitter);
+
+    void pollTaskEvent(Duration duration, SseEmitter emitter, org.apache.kafka.clients.consumer.Consumer<String, String> consumer);
+
+    org.apache.kafka.clients.consumer.Consumer<String, String> createConsumer();
 }
