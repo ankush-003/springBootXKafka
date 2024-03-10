@@ -32,5 +32,9 @@ build/
 ### VS Code ###
 .vscode/
 
+### Env ###
+env.properties
+
+
 ### Firebase ###
 firebase-config.json
